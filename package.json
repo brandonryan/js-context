@@ -1,0 +1,16 @@
+{
+  "name": "js-context",
+  "version": "0.2.1",
+  "type": "module",
+  "keywords": [
+    "context",
+    "ctx",
+    "go"
+  ],
+  "description": "Context library inspired by go",
+  "main": "index.js",
+  "repository": "github.com/brandonryan/js-context",
+  "author": "Brandon Ryan",
+  "license": "MIT",
+  "private": false
+}
