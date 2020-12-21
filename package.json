@@ -12,5 +12,10 @@
   "repository": "github.com/brandonryan/js-context",
   "author": "Brandon Ryan",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "exports": {
+    "./": "./index.js",
+    "./cancellation": "./modules/cancellation.js",
+    "./store": "./modules/store.js"
+  }
 }
