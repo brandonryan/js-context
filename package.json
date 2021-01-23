@@ -13,8 +13,17 @@
   "author": "Brandon Ryan",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "test": "node --no-warnings --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "jest": {
+    "transform": {}
+  },
   "exports": {
     ".": "./index.js",
     "./*": "./modules/*.js"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
   }
 }

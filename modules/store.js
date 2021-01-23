@@ -1,6 +1,6 @@
 const { ContextBuilder } = require("../lib/builder")
 
-const StoreSym = new Symbol("Store")
+const StoreSym = Symbol("Store")
 
 export function withStore(ctx) {
     const builder = new ContextBuilder()
