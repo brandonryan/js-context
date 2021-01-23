@@ -14,8 +14,7 @@
   "license": "MIT",
   "private": false,
   "exports": {
-    "./": "./index.js",
-    "./cancellation": "./modules/cancellation.js",
-    "./store": "./modules/store.js"
+    ".": "./index.js",
+    "./*": "./modules/*.js"
   }
 }

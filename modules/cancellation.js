@@ -6,6 +6,7 @@ export function withCancel(ctx) {
     //TODO: make sure that withCancel on a lower and upper context behave where
     //a context will cancel any children context, but any parent contexts are 
     //unaffected even if they have a cancel set.
+
     //for now we just throw an error to prevent confusion
     if(ctx[cancelStateSym]) {
         throw new Error("Context already has cancellation set")
