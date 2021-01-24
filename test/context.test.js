@@ -53,6 +53,8 @@ describe("shouldFreeze", () => {
 	describe("true", ()=> {
 		test("should freeze", () => {
 			expect(Object.isFrozen(ctx)).toBeTruthy()
+			ctx = ctx.with("key", "value")
+			expect(Object.isFrozen(ctx)).toBeTruthy()
 		})
 
 		test("should freeze deeply", () => {
@@ -66,6 +68,8 @@ describe("shouldFreeze", () => {
 		beforeAll(() => setShouldFreeze(false))
 
 		test("shouldn't freeze", () => {
+			expect(Object.isFrozen(ctx)).toBeFalsy()
+			ctx = ctx.with("key", "value")
 			expect(Object.isFrozen(ctx)).toBeFalsy()
 		})
 		
