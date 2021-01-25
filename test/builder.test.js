@@ -34,6 +34,10 @@ describe("builder", () => {
 
 		builder.withCtxFunction("fn", () => {})
 		expect(() => builder.fn()).toThrow(propErr)
+
+		const sym = Symbol("test-sym")
+		builder.with(sym, "value")
+		expect(() => builder[sym]).toThrow(propErr)
 	})
 
 	test("should build values", () => {

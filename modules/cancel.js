@@ -1,6 +1,6 @@
 import { ContextBuilder } from "../index.js"
 
-const cancelStateSym = Symbol("cancel-state")
+const cancelSym = Symbol("cancel-state")
 
 export function withCancel(ctx) {
     //TODO: make sure that withCancel on a lower and upper context behave where
@@ -8,24 +8,18 @@ export function withCancel(ctx) {
     //unaffected even if they have a cancel set.
 
     //for now we just throw an error to prevent confusion
-    if(ctx[cancelStateSym]) {
+    if(ctx[cancelSym]) {
         throw new Error("Context already has cancellation set")
     }
 
     return new ContextBuilder()
-        .with(cancelStateSym, {
+        .with(cancelSym, {
             cancelled: false,
             reason: "",
             callbacks: []
         })
         .withCtxFunction(whenCancelled.name, whenCancelled)
         .build(ctx)
-}
-
-export function withTimeout(ctx, ms) {
-    ctx = withCancel(ctx)
-    setTimeout(() => cancelCtx(ctx, "timeout"), ms)
-    return ctx
 }
 
 export function cancelCtx(ctx, reason) {
@@ -56,7 +50,7 @@ function fmtReason(reason) {
 }
 
 function getCancelState(ctx) {
-    const state = ctx[cancelStateSym]
+    const state = ctx[cancelSym]
     if(state === undefined) {
         throw new Error("Context does not have cancellation set")
     }
