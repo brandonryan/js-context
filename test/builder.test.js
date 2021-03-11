@@ -1,7 +1,7 @@
 import {ContextBuilder, Context} from "../index.js"
 import {jest} from "@jest/globals"
 
-const propErr = new Error("Cannot retrieve properties from ContextBuilder. build() the context first.")
+const propErr = new Error("ContextBuilder does not allow retrieving properties. build() the context first.")
 
 let builder
 beforeEach(() => {
@@ -42,13 +42,16 @@ describe("builder", () => {
 
 	test("should build values", () => {
 		const fn = jest.fn((ctx) => ctx.key)
-		
+		const sym = Symbol("test-sym")
+
 		const ctx = builder
 			.with("key", "val")
+			.with(sym, "val")
 			.withCtxFunction("fn", fn)
 			.build(new Context())
 
 		ctx.fn()
+		expect(ctx[sym]).toEqual("val")
 		expect(ctx.key).toEqual("val")
 		expect(fn).toHaveReturnedWith("val")  
 	})

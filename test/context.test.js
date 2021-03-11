@@ -27,7 +27,7 @@ describe("ctx.with() basic usage", () => {
 
 	test("should shadow parent values", () => {
 		const child0 = ctx.with("key", 0)
-		const child1 = ctx.with("key", 1)
+		const child1 = child0.with("key", 1)
 		expect(child0.key).toEqual(0)
 		expect(child1.key).toEqual(1)
 	})
@@ -91,9 +91,9 @@ describe("symbols", () => {
 		expect(ctx[sym]).toEqual("value")
 	})
 
-	test("shouldn't work with(object)", () => {
+	test("should work with(object)", () => {
 		ctx = ctx.with({[sym]: "value"})
-		expect(ctx[sym]).not.toEqual("value")
+		expect(ctx[sym]).toEqual("value")
 	})
 
 	test("shouldn't deeply assign", () => {
