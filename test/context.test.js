@@ -47,6 +47,8 @@ describe("ctx.with() advanced useage", () => {
 		expect(ctx.nested).toBeInstanceOf(Context)
 		expect(ctx.nested.key).toEqual("value")
 	})
+
+	test.todo("should shadow deeply")
 })
 
 describe("shouldFreeze", () => {
