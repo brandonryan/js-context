@@ -7,28 +7,22 @@ import {
 } from "../modules/cancel.js"
 import {jest} from "@jest/globals"
 
-jest.useFakeTimers('modern')
-
 let ctx = undefined
 beforeEach(() => {
+    jest.useFakeTimers('modern')
     ctx = withCancel(new Context())
 });
 
 describe("basic usage", () => {
     test("can be cancelled after promise", async () => {
-        const whenExpected = expect(whenCancelled(ctx))
-            .rejects
-            .toThrow("Context has been cancelled. Reason: test")
-        
+        const whenExpected = expectRejection(ctx, "test")
         cancelCtx(ctx, "test")
         await whenExpected
     })
 
     test("can be cancelled before promise", async () => {
         cancelCtx(ctx, "test")
-        await expect(whenCancelled(ctx))
-            .rejects
-            .toThrow("Context has been cancelled. Reason: test")
+        await expectRejection(ctx, "test")
     })
 })
 
@@ -45,22 +39,25 @@ describe("nested usage", () => {
     })
 
     test("child will not cancel parent", async () => {
-        const mockfn = jest.fn()
-
         cancelCtx(child, "test")
         await expectRejection(child, "test")
-        whenCancelled(ctx).then(mockfn).catch(mockfn)
-        expect(mockfn).not.toHaveBeenCalled()
+        //if whenCancelled(ctx) settles, it will reject before the resolve.
+        await Promise.race([whenCancelled(ctx), Promise.resolve("ok")])
     })
 })
 
 
 describe("timeout", () => {
-    test.todo("test timeout stuff")
+    test("cancels context after delay", async () => {
+        ctx = withCancelTimeout(ctx, 500)
+        const prom = expectRejection(ctx, "timeout")
+        jest.advanceTimersByTime(500)
+        await prom
+    })
 })
 
 async function expectRejection(ctx, reason) {
-    await expect(whenCancelled(ctx))
+    return await expect(whenCancelled(ctx))
         .rejects
         .toThrow(`Context has been cancelled. Reason: ${reason}`)
 }

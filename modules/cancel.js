@@ -53,7 +53,7 @@ export async function whenCancelled(ctx) {
     }
 
     //return a promise that will be rejected when callbacks are called
-    return new Promise((res, rej) => {
+    return await new Promise((res, rej) => {
         addCallbackToContext(state, (reason) => {
             rej(new Error(fmtReason(reason)))
         })
@@ -72,7 +72,7 @@ export function withCancelTimeout(ctx, ms) {
 
     ctx = withCancel(ctx)
     const state = getCancelState(ctx)
-    state.timeoutId = setTimeout(() => cancelCtx(ctx, "timeout"), ms)
+    state.timeoutId = setTimeout(cancelCtx, ms, ctx, "timeout")
 
     return ctx
 }
@@ -94,7 +94,7 @@ function getCancelled(state) {
 function addCallbackToContext(state, callb) {
     if(state === undefined) return
     state.callbacks.push(callb)
-    return addCallbackToContext(state.parent)
+    return addCallbackToContext(state.parent, callb)
 }
 
 function fmtReason(reason) {

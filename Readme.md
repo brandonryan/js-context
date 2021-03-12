@@ -76,10 +76,12 @@ ctx.obj.a = 1 // => Error: obj is frozen
 
 It is recommended to disable this feature when in production by using `setShouldFreeze(false)`. Freezing has been known to cause performance issues in certain javascript engines.
 
+## Internals
+JS-Context uses prototype inheritance to ensure that when you set new values, you never modify the original context.
+
 # Modules
 **TODO**
 ## Store
 ## Cancel
 
 
-JS-Context uses prototype inheritance to ensure that when you set new values, you never modify the original context.
