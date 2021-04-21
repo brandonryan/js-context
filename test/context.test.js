@@ -94,17 +94,23 @@ describe("symbols", () => {
 	})
 
 	test("should work with(object)", () => {
-		ctx = ctx.with({[sym]: "value"})
+		ctx = ctx.with({
+			[sym]: "value",
+			nested: { [sym]: "value2" }
+		})
 		expect(ctx[sym]).toEqual("value")
+		expect(ctx.nested[sym]).toEqual("value2")
 	})
 
 	test("shouldn't deeply assign", () => {
-		const obj = {
-			some: "state",
-			with: "complex values"
-		}
-		ctx = ctx.with(sym, obj)
-		expect(ctx[sym]).toBe(obj)
+		const obj1 = {key: 'val'}
+		const obj2 = {key: 'otherval'}
+		ctx = ctx.with(sym, obj1)
+		expect(ctx[sym]).toBe(obj1)
+		expect(ctx[sym].key).toEqual('val')
+		ctx = ctx.with(sym, obj2)
+		expect(ctx[sym]).toBe(obj2)
+		expect(ctx[sym].key).toEqual('otherval')
 	})
 })
 

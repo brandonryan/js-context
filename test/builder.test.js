@@ -49,31 +49,37 @@ describe("builder", () => {
 			.with(sym, "val")
 			.withCtxFunction("fn", fn)
 			.build(new Context())
-
 		ctx.fn()
 		expect(ctx[sym]).toEqual("val")
 		expect(ctx.key).toEqual("val")
-		expect(fn).toHaveReturnedWith("val")  
+		expect(fn).toHaveReturnedWith("val")
 	})
 
 	test("should inherit build", () => {
+		const sym = Symbol("test-sym")
 		const inherited = builder
 			.with("key", "value")
+			.with(sym, "value")
 			.build(new ContextBuilder())
 		
 		expect(() => builder.key).toThrow(propErr)
+		expect(() => builder[sym]).toThrow(propErr)
 
 		const ctx = inherited.build(new Context())
 		expect(ctx.key).toEqual("value")
+		expect(ctx[sym]).toEqual("value")
 	})
 
 	test("functions should behave the same as context for build", () => {
 		const fn = jest.fn(() => 0)
+		const sym = Symbol("test-sym")
 
 		const doAssignments = (ctx) => ctx
 			.with("key", "value")
+			.with(sym, "symvalue")
 			.with({ deeply: { nested: {
 				value: 0,
+				[sym]: "nested symvalue",
 				shadowValue: 0
 			} } })
 			.with({ deeply: { nested: {
@@ -85,7 +91,9 @@ describe("builder", () => {
 		const doExpectations = (ctx) => {
 			ctx.fn()
 			expect(ctx.key).toEqual("value")
+			expect(ctx[sym]).toEqual("symvalue")
 			expect(ctx.deeply.nested.value).toEqual(0)
+			expect(ctx.deeply.nested[sym]).toEqual("nested symvalue")
 			expect(ctx.deeply.nested.shadowValue).toEqual(1)
 			expect(ctx.deeply.nested.otherValue).toEqual(0)
 			expect(fn).toHaveReturnedWith(0)
@@ -98,5 +106,9 @@ describe("builder", () => {
 		//test the context that comes from builder
 		builder = doAssignments(builder)
 		doExpectations(builder.build(new Context()))
+
+		//test the context that comes from and inherited build
+		let inherited = builder.build(new ContextBuilder())
+		doExpectations(inherited.build(new Context()))
 	})
 })

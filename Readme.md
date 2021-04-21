@@ -45,8 +45,38 @@ console.log(ctx2.b) // => 1
 console.log(ctx2.a) // => stays
 ```
 
+## Functions With Context
+You can attach functions to a context using `withCtxFunction` and the first argument to the function will always be the current context. Alternatively you can use `with(key, function(){})` and the current context will be `this`. Use this to add utility functions (such as logging) to the context.
+```javascript
+let ctx = new Context()
+ctx = ctx.with("value", "Hello")
+
+//withCtxFunction
+ctx = ctx.withCtxFunction("log", (ctx, arg) => {
+    console.log(ctx.value + " " + arg)
+})
+ctx.log("World") // => Hello World
+
+//accessing ctx via this
+ctx.with("log2", function(arg) {
+    console.log(this.value + " " + arg)
+})
+ctx.log2("World") // => Hello World
+```
+
+## Deep Freezing
+To guarantee immutability, JS-Context freezes all objects on the context by default.
+```javascript
+let ctx = new Context()
+ctx.foo = "bar" // => Error: ctx is frozen
+
+//objects get deeply frozen
+ctx = ctx.with({obj: {a: 0}})
+ctx.obj.a = 1 // => Error: obj is frozen
+```
+
 ## Symbol keys
-If you need an object on the context that you can modify directly by reference, use a symbol for the key. JS-Context will not do any deep with these values. This is useful for modules who need to maintain complex state, or values that should not be modified by the user of the module.
+If you need an object on the context that you can modify directly by reference, use a symbol for the key. JS-Context will not do any deep merging with these values. This is useful for modules who need to maintain complex state, or values that should not be modifiable by the user of a module.
 ```javascript
 const sym = new Symbol("sym")
 let ctx = new Context().with(sym, {
@@ -58,20 +88,6 @@ value.state = 1 //valid because key is a symbol, causing state to be a plain obj
 ctx = ctx.with(sym, {other: 2}) //shadows the entire value (no deep nesting)
 console.log(ctx[sym].other) // => 2
 console.log(ctx[sym].state) // => undefined
-```
-
-## Functions With Context
-You can attach functions to a context using `withCtxFunction` and the first argument to the function will always be the current context. Use this to add utility functions (such as logging) to the context.
-
-## Deep Freezing
-To guarantee immutability, JS-Context freezes all objects on the context by default.
-```javascript
-let ctx = new Context()
-ctx.foo = "bar" // => Error: ctx is frozen
-
-//objects get deeply frozen
-ctx = ctx.with({obj: {a: 0}})
-ctx.obj.a = 1 // => Error: obj is frozen
 ```
 
 It is recommended to disable this feature when in production by using `setShouldFreeze(false)`. Freezing has been known to cause performance issues in certain javascript engines.

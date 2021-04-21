@@ -9,7 +9,7 @@
   ],
   "description": "Context library inspired by go",
   "main": "index.js",
-  "repository": "github.com/brandonryan/js-context",
+  "repository": "https://github.com/brandonryan/js-context",
   "author": "Brandon Ryan",
   "license": "MIT",
   "private": false,
