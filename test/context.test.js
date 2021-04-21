@@ -49,6 +49,18 @@ describe("ctx.with() advanced useage", () => {
 	})
 
 	test.todo("should shadow deeply")
+
+	test("cant enumerate functions", () => {
+		ctx = ctx.with({
+			test:"val",
+			fn: () => 0
+		})
+		const keys = []
+		for(let k in ctx) {
+			keys.push(k)
+		}
+		expect(keys).toEqual(["test"])
+	})
 })
 
 describe("shouldFreeze", () => {

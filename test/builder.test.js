@@ -61,7 +61,7 @@ describe("builder", () => {
 			.with("key", "value")
 			.with(sym, "value")
 			.build(new ContextBuilder())
-		
+
 		expect(() => builder.key).toThrow(propErr)
 		expect(() => builder[sym]).toThrow(propErr)
 
@@ -87,7 +87,7 @@ describe("builder", () => {
 				shadowValue: 1
 			} } })
 			.withCtxFunction("fn", fn)
-		
+
 		const doExpectations = (ctx) => {
 			ctx.fn()
 			expect(ctx.key).toEqual("value")

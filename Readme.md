@@ -74,11 +74,12 @@ ctx.foo = "bar" // => Error: ctx is frozen
 ctx = ctx.with({obj: {a: 0}})
 ctx.obj.a = 1 // => Error: obj is frozen
 ```
+It is recommended to disable this feature when in production by using `setShouldFreeze(false)`. Freezing has been known to cause performance issues in certain javascript engines.
 
 ## Symbol keys
 If you need an object on the context that you can modify directly by reference, use a symbol for the key. JS-Context will not do any deep merging with these values. This is useful for modules who need to maintain complex state, or values that should not be modifiable by the user of a module.
 ```javascript
-const sym = new Symbol("sym")
+const sym = Symbol("sym")
 let ctx = new Context().with(sym, {
     state: 0
 })
@@ -89,8 +90,6 @@ ctx = ctx.with(sym, {other: 2}) //shadows the entire value (no deep nesting)
 console.log(ctx[sym].other) // => 2
 console.log(ctx[sym].state) // => undefined
 ```
-
-It is recommended to disable this feature when in production by using `setShouldFreeze(false)`. Freezing has been known to cause performance issues in certain javascript engines.
 
 ## Internals
 JS-Context uses prototype inheritance to ensure that when you set new values, you never modify the original context.
