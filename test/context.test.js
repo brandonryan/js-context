@@ -63,6 +63,17 @@ describe("ctx.with() advanced useage", () => {
 	})
 })
 
+describe("ctx.asObject()", () => {
+	test("should give object", () => {
+		const obj = {
+			val: "test",
+			nested: {val: 0}
+		}
+		ctx = ctx.with(obj)
+		expect(ctx.asObject()).toEqual(obj)
+	})
+})
+
 describe("shouldFreeze", () => {
 	describe("true", ()=> {
 		test("should freeze", () => {

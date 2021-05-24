@@ -70,6 +70,10 @@ describe("builder", () => {
 		expect(ctx[sym]).toEqual("value")
 	})
 
+	test("should not allow converting to object", () => {
+		expect(builder.asObject).toThrow("Can not convert")
+	})
+
 	test("functions should behave the same as context for build", () => {
 		const fn = jest.fn(() => 0)
 		const sym = Symbol("test-sym")
