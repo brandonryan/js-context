@@ -64,13 +64,30 @@ describe("ctx.with() advanced useage", () => {
 })
 
 describe("ctx.asObject()", () => {
-	test("should give object", () => {
+	test("Should give object", () => {
 		const obj = {
 			val: "test",
 			nested: {val: 0}
 		}
 		ctx = ctx.with(obj)
 		expect(ctx.asObject()).toEqual(obj)
+	})
+
+	test("Should trim out empty objects", () => {
+		ctx = ctx.with({
+			val: "value",
+			empty: {},
+			nested: {
+				name: "value",
+				empty: {}
+			}
+		})
+
+		expect(ctx.asObject()).toEqual({
+			val: "value",
+			nested: { name: "value"}
+		})
+		
 	})
 })
 
