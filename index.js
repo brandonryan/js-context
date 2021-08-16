@@ -1,2 +1,2 @@
-export {ContextBuilder} from "./lib/builder.js"
-export {Context, setShouldFreeze} from "./lib/context.js"
+export {ContextBuilder} from "./src/builder.js"
+export {Context, setShouldFreeze} from "./src/context.js"

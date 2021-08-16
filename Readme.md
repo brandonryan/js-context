@@ -4,7 +4,7 @@
 JS-Context is a library for passing scoped contextual information into your functions. The idea is that you would create a context, assign values on it, then pass it as the first argument to any functions down your stack. It guarantees that functions cannot modify the context outside of scope.
 
 ## Context Creation
-A Context, at its bare minimum, is just an immutable object that you can pass around your functions.
+A Context, at its bare minimum, is just an immutable (frozen) object that you can pass around your functions.
 ```javascript
 //context creation
 let ctx = new Context()
@@ -12,7 +12,7 @@ doSomething(ctx, ...otherParams)
 ```
 
 ## Setting Values
-You can use the `.with()` method on a context to set values. The `.with` function always returns a new context that inherits all properties from its parent. This allows for safety when passing the context deep into nested function calls, as there is no way to modify the context out of scope.
+You can use the `.with()` method on a context to set values. The `.with` function always returns a new context that inherits all properties from its parent. This allows for safety when passing the context deep into nested function calls, as there is no way to modify the context out of scope. This is the only way to set values on a context.
 ```javascript
 //setting values on a context
 let ctx = new Context()
@@ -21,7 +21,7 @@ ctx = ctx.with({foo: "bar"}) //set multiple values (values)
 console.log(ctx.foo) // => bar
 ```
 
-If you set a value on a context that is already set, the value will be shadowed so that the new context cannot see the previous value, but the original context value will be unmodified. You can think of this new context value as "shadowing" the old one.
+If you set a value on a context that is already set, the value will be shadowed so that the new context cannot see the previous value, but the original context value will be unmodified.
 ```javascript
 const rootCtx = new Context()
 const ctx1 = rootCtx.with("foo", 0)
@@ -45,27 +45,52 @@ console.log(ctx2.b) // => 1
 console.log(ctx2.a) // => stays
 ```
 
-## Functions With Context
-You can attach functions to a context using `withCtxFunction` and the first argument to the function will always be the current context. Alternatively you can use `with(key, function(){})` and the current context will be `this`. Use this to add utility functions (such as logging) to the context.
+## Symbol keys
+If you need an object on the context that maintains reference equality, use a symbol for the key. JS-Context will not do any deep merging with these values. This is useful for modules who need to maintain complex state, or values that should not be directly modifiable by the context user.
 ```javascript
-let ctx = new Context()
-ctx = ctx.with("value", "Hello")
+const sym = Symbol("example symbol")
+const init = {state: 0}
+let ctx = new Context().with(sym, init)
 
-//withCtxFunction
-ctx = ctx.withCtxFunction("log", (ctx, arg) => {
-    console.log(ctx.value + " " + arg)
-})
-ctx.log("World") // => Hello World
+console.log(ctx[sym].state) // => 0
+console.log(ctx[sym].state === init) // => true
 
-//accessing ctx via this
-ctx.with("log2", function(arg) {
-    console.log(this.value + " " + arg)
-})
-ctx.log2("World") // => Hello World
+ctx[sym].state = 1 //valid because key is a symbol, therefore state is the original unmodified object
+console.log(ctx[sym].state) // => 1
+console.log(init.state) // => 1
+
+ctx = ctx.with(sym, {other: 2}) //shadows the entire value (no deep nesting)
+console.log(ctx[sym].other) // => 2
+console.log(ctx[sym].state) // => undefined
 ```
 
-## Deep Freezing
-To guarantee immutability, JS-Context freezes all objects on the context by default.
+## Functions On Context
+You can attach functions to a context using `withCtxFunction`. Use this to add utility functions (such as logging) to the context. The first argument to the function will always be the current context. Alternatively you can use `with(key, function(){})` and the current context will be `this`.
+```javascript
+let ctx = new Context()
+ctx = ctx.with("logLevel", 4)
+ctx = ctx.withCtxFunction("log", (ctx, ...args) => {
+    if(ctx.logLevel > 3) {
+        console.log(...args)
+    }
+})
+ctx.log("Hello World") // => Hello World
+```
+Example using `this`
+```javascript
+//accessing ctx via this
+ctx.with("log", function(arg) {
+    if(ctx.logLevel > 3) {
+        console.log(...args)
+    }
+})
+ctx.log("Hello World") // => Hello World
+```
+
+## Performance
+### Context Deep Freezing
+To guarantee immutability, JS-Context freezes all objects on the context by default.  
+It is recommended to disable this feature when in production by using `setShouldFreeze(false)`. Freezing has been known to cause performance issues in certain javascript engines.
 ```javascript
 let ctx = new Context()
 ctx.foo = "bar" // => Error: ctx is frozen
@@ -74,27 +99,13 @@ ctx.foo = "bar" // => Error: ctx is frozen
 ctx = ctx.with({obj: {a: 0}})
 ctx.obj.a = 1 // => Error: obj is frozen
 ```
-It is recommended to disable this feature when in production by using `setShouldFreeze(false)`. Freezing has been known to cause performance issues in certain javascript engines.
-
-## Symbol keys
-If you need an object on the context that you can modify directly by reference, use a symbol for the key. JS-Context will not do any deep merging with these values. This is useful for modules who need to maintain complex state, or values that should not be modifiable by the user of a module.
-```javascript
-const sym = Symbol("sym")
-let ctx = new Context().with(sym, {
-    state: 0
-})
-const value = ctx[sym]
-value.state = 1 //valid because key is a symbol, causing state to be a plain object
-
-ctx = ctx.with(sym, {other: 2}) //shadows the entire value (no deep nesting)
-console.log(ctx[sym].other) // => 2
-console.log(ctx[sym].state) // => undefined
-```
-
-## Internals
-JS-Context uses prototype inheritance to ensure that when you set new values, you never modify the original context.
+### Prototype chain
+JS-Context uses prototype inheritance to allow for the "shadowing" behavior without making copies of the data every time you use `with`. However, this comes at the cost of runtime lookup performance. When you access a property, the javascript engine has to walk all the way up the prototype chain until it finds the property its looking for. See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain for more information on prototype chains.  
+If you have a lot of properties to add, and you want to avoid this performance cost, use the `ContextBuilder`. It avoids the prototype inheritance by putting all the properties on the same object.
 
 # Modules
+Modules are libraries that add functionality to a context. Check the modules folder for examples.
+
 **TODO**
 ## Store
 ## Cancel
