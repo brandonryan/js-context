@@ -1,7 +1,10 @@
 # JS-Context
 *inspired by go's [context package](https://golang.org/pkg/context/).*
 
-JS-Context is a library for passing scoped contextual information into your functions. The idea is that you would create a context, assign values on it, then pass it as the first argument to any functions down your stack. It guarantees that functions cannot modify the context outside of scope.
+>⤵️ Pass scoped data and functionality down your stack  
+>🔐 Immutability guarantee  
+>💪 Typescript support  
+>📄 Zero dependencies
 
 ## Context Creation
 A Context, at its bare minimum, is just an immutable (frozen) object that you can pass around your functions.
@@ -104,10 +107,17 @@ JS-Context uses prototype inheritance to allow for the "shadowing" behavior with
 If you have a lot of properties to add, and you want to avoid this performance cost, use the `ContextBuilder`. It avoids the prototype inheritance by putting all the properties on the same object.
 
 # Modules
-Modules are libraries that add functionality to a context. Check the modules folder for examples.
+Modules are libraries that expose functionality on a context via the .with() methods. Some of these expose functions as properties on the context, other functions must be called, passing a context.
 
-**TODO**
-## Store
-## Cancel
+Official Modules:
+name | description
+---|---
+cancel | Adds timeout/cancel to context
+store | Share data between child contexts
+[winston](https://npmjs.com/package/js-context-winston) | Contextual winston logging
+[aws-lambda](https://npmjs.com/package/js-context-aws-lambda) | AWS lambda timeout and AWS context information
+[knex](https://npmjs.com/package/js-context-knex) | Adds knex to context
+[mssql](https://npmjs.com/package/js-context-mssql) | Adds mssql to context
 
-
+Community Modules:
+## Please contribute and submit a pull request to be listed here! 😄
