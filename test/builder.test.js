@@ -1,4 +1,4 @@
-import {ContextBuilder, Context} from "../index.js"
+import {ContextBuilder, Context} from "../dist/index.js"
 import {jest} from "@jest/globals"
 
 const propErr = new Error("ContextBuilder does not allow retrieving properties. build() the context first.")

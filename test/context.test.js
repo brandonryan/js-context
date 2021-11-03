@@ -1,4 +1,4 @@
-import {Context, setShouldFreeze} from "../index.js"
+import {Context, setShouldFreeze} from "../dist/index.js"
 import {jest} from "@jest/globals"
 
 let ctx
@@ -22,7 +22,7 @@ describe("ctx.with() basic usage", () => {
 	test("can't set non-plain object", () => {
 		const ctr = function() { this.key = "value" }
 		const obj = new ctr()
-		expect(() => ctx.with(obj)).toThrow(new Error("Key must be a string or symbol"));
+		expect(() => ctx.with(obj)).toThrow(new Error("Key must be a string, number, or symbol"));
 	})
 
 	test("should shadow parent values", () => {

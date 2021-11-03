@@ -1,7 +1,9 @@
+/// <reference path="builder.d.ts" />
+
 //TODO: make it obvious that you are dealing with a builder if you try to use it like a context
 
 import { Context } from "./context.js"
-import {isPlainObject, isValidKey} from "./utils.js"
+import { isPlainObject, isValidKey } from "./utils.js"
 
 //private variables
 const priv = new WeakMap()

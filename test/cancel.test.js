@@ -1,10 +1,10 @@
-import {ContextBuilder, Context} from "../index.js"
+import { Context } from "../dist/index.js"
 import {
     withCancel, 
     cancelCtx, 
     whenCancelled, 
     withCancelTimeout
-} from "../modules/cancel.js"
+} from "../dist/modules/cancel.js"
 import {jest} from "@jest/globals"
 
 let ctx = undefined

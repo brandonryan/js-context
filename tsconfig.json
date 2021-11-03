@@ -1,0 +1,16 @@
+{
+    "include": [
+        "src/**/*"
+    ],
+    "compilerOptions": {
+        "target": "ES2020",
+        "moduleResolution": "node",
+        "checkJs": false,
+        "allowJs": true,
+        "strict": true,
+        "outDir": "dist",
+        "declarationDir": "dist/types",
+        "declaration": true,
+        "noEmitOnError": true,
+    }
+}

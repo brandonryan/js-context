@@ -8,23 +8,28 @@
     "go"
   ],
   "description": "Context library inspired by go",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
   "repository": "https://github.com/brandonryan/js-context",
   "author": "Brandon Ryan",
   "license": "MIT",
   "private": false,
   "scripts": {
+    "build": "tsc",
+    "prepublish": "yarn run build && yarn run test",
+    "pretest": "yarn run build",
     "test": "node --no-warnings --experimental-vm-modules node_modules/.bin/jest"
   },
   "jest": {
     "transform": {}
   },
   "exports": {
-    ".": "./index.js",
-    "./*": "./modules/*.js"
+    ".": "./dist/index.js",
+    "./*": "./dist/modules/*.js"
   },
   "devDependencies": {
-    "jest": "^27.0.6"
+    "@types/jest": "^27.0.2",
+    "jest": "^27.0.6",
+    "typescript": "^4.4.4"
   }
 }
