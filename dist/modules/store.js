@@ -1,4 +1,4 @@
-import { ContextBuilder } from "../index";
+import { ContextBuilder } from "../index.js";
 const StoreSym = Symbol("store");
 export function withStore(ctx) {
     const builder = new ContextBuilder();

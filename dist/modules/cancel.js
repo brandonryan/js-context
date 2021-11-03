@@ -1,4 +1,4 @@
-import { ContextBuilder } from "../index";
+import { ContextBuilder } from "../index.js";
 const cancelSym = Symbol("cancel-state");
 /**
  * Sets cancellation on the context

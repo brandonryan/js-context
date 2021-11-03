@@ -1,4 +1,3 @@
-/// <reference path="context.d.ts" />
 import { isPlainObject, isValidKey } from "./utils.js";
 let ShouldFreeze = true;
 export function setShouldFreeze(val) {

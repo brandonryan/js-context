@@ -15,8 +15,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "tsc",
-    "prepublish": "yarn run build && yarn run test",
+    "build": "tsc && yarn run copyfiles -u1 src/*.d.ts dist/types",
+    "prepublishOnly": "yarn run test",
     "pretest": "yarn run build",
     "test": "node --no-warnings --experimental-vm-modules node_modules/.bin/jest"
   },
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
+    "copyfiles": "^2.4.1",
     "jest": "^27.0.6",
     "typescript": "^4.4.4"
   }

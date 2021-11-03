@@ -1,5 +1,5 @@
-import { Context, ContextBuilder } from "../index"
-import type {ChildContext} from "../context"
+import { Context, ContextBuilder } from "../index.js"
+import type {ChildContext} from "../context.js"
 
 const StoreSym = Symbol("store")
 
