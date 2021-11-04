@@ -1,7 +1,7 @@
 //TODO: make it obvious that you are dealing with a builder if you try to use it like a context
 
 import { Context } from "./context.js"
-import { isPlainObject, isValidKey } from "./utils.js"
+import { isObject, isValidKey } from "./utils.js"
 
 //private variables
 const priv = new WeakMap()
@@ -15,7 +15,7 @@ export class ContextBuilder {
         const values = priv.get(this)
 
         //in this case, treat key as values only arg
-        if(isPlainObject(key) && value === undefined) {
+        if(isObject(key) && value === undefined) {
             safegaurdKeys(this, key)
             deepAssign(values, key)
             return this
@@ -26,7 +26,7 @@ export class ContextBuilder {
         }
 
         safegaurdKey(this, key, value)
-		if(isPlainObject(value) && typeof key !== "symbol") {
+		if(isObject(value) && typeof key !== "symbol") {
             deepAssign(values, {[key]: value})
             return this
 		}
@@ -65,7 +65,7 @@ export class ContextBuilder {
 
 function deepAssign(dest, src) {
     for(const key in src) {
-        if(isPlainObject(src[key])) {
+        if(isObject(src[key])) {
             if(dest[key] === undefined) {
                 dest[key] = {}
             }

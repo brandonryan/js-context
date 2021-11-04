@@ -19,10 +19,18 @@ describe("ctx.with() basic usage", () => {
 		expect(ctx.key).toBeUndefined()
 	})
 
-	test("can't set non-plain object", () => {
+	test("can set non-plain object", () => {
 		const ctr = function() { this.key = "value" }
-		const obj = new ctr()
-		expect(() => ctx.with(obj)).toThrow(new Error("Key must be a string, number, or symbol"));
+		const child = ctx.with(new ctr())
+		expect(child.key).toEqual('value')
+	})
+
+	test("can't set with array", () => {
+		expect(() => ctx.with(['value'])).toThrow()
+	})
+
+	test("can't set with function", () => {
+		expect(() => ctx.with(() => {})).toThrow()
 	})
 
 	test("should shadow parent values", () => {
@@ -60,6 +68,12 @@ describe("ctx.with() advanced useage", () => {
 			keys.push(k)
 		}
 		expect(keys).toEqual(["test"])
+	})
+
+	test("cant shadow reserved props", () => {
+		expect(() => ctx.with({asObject: 0}))
+		expect(() => ctx.with({with: 0}))
+		expect(() => ctx.with({withCtxFunction: 0}))
 	})
 })
 

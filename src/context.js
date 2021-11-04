@@ -1,4 +1,4 @@
-import { isPlainObject, isValidKey } from "./utils.js"
+import { isObject, isValidKey } from "./utils.js"
 
 let ShouldFreeze = true
 export function setShouldFreeze(val) {
@@ -24,14 +24,14 @@ export class Context {
 		const child = makeChildContext(this)
 
 		//in this case, treat values object, only arg
-		if(isPlainObject(keyOrValues)) {
+		if(isObject(keyOrValues)) {
 			return deepAssignContext(child, keyOrValues)
 		}
 		
 		if(!isValidKey(keyOrValues)) throw new Error("Key must be a string, number, or symbol")
 
 		//if value is an object we need to do deep merge assignment
-		if(isPlainObject(value)) {
+		if(isObject(value)) {
 			return deepAssignContext(child, {[keyOrValues]: value})
 		}
 
@@ -72,7 +72,7 @@ export class Context {
 function deepAssignContext(ctx, src) {
 	for(const [key, value] of Object.entries(src)) {
 		//if its an object... https://tinyurl.com/ctxdeeper
-		if(isPlainObject(value)) {
+		if(isObject(value)) {
 			const valueCtx = ctx[key] instanceof Context ?
 				makeChildContext(ctx[key]) : //if the key on the context is a context, make it a child context.
 				makeChildContext(new Context()) //otherwise, make it a new context child and shadow the value

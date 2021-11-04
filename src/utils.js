@@ -1,7 +1,7 @@
-export function isPlainObject(value) {
+export function isObject(value) {
     if(typeof value !== 'object') return false
     if(value === null) return false
-    if(Object.getPrototypeOf(value) !== Object.prototype) return false
+    if(Array.isArray(value)) return false
     return true
 }
 

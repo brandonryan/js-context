@@ -14,18 +14,18 @@ type CancelState = {
 }
 
 export type WithCancel = ChildContext<Context, CtxValues>
-interface CtxValues {
+type CtxValues = {
     [cancelSym]: CancelState
-    whenCancelled: () => Promise<void>
+    whenCancelled: typeof whenCancelled
 }
 
 /**
  * Sets cancellation on the context
  * use cancelCtx to cancel the context
- * use ctx.whenCancelled or whenCancelled to listen for ctx cancellation
+ * use ctx.whenCancelled or whenCancelled to listen for ctx cancellation  
  * TODO: notes about context cancellation with parents/children
  */
-export function withCancel<C extends Context>(ctx: C) {
+export function withCancel<C extends Context>(ctx: C): WithCancel {
     const ctxState: CancelState = {
         reason: undefined,
         callbacks: [],
@@ -43,7 +43,7 @@ export function withCancel<C extends Context>(ctx: C) {
         .build(ctx)
 }
 
-export function cancelCtx(ctx: WithCancel, reason: string) {
+export function cancelContext(ctx: WithCancel, reason: string) {
     const state = getCancelState(ctx)
     
     if(typeof reason !== 'string') throw new Error("Must provide a reason for cancellation.")
@@ -75,11 +75,12 @@ export async function whenCancelled(ctx: WithCancel): Promise<void> {
 /**
  * Adds cancellation to context that will be cancelled when specified timeout is reached
  */
-export function withCancelTimeout<C extends WithCancel>(ctx: C, ms: number) {
+export function withCancelTimeout<C extends Context>(ctx: C, ms: number) {
     const child = withCancel(ctx)
+    
     const state = getCancelState(child)
     //Nodejs has weird typings. Have to convert to number with +
-    state.timeoutId = +setTimeout(cancelCtx, ms, child, "timeout")
+    state.timeoutId = +setTimeout(cancelContext, ms, child, "timeout")
 
     return child
 }
