@@ -1,16 +1,16 @@
-import { Context, ContextBuilder } from "../index"
-import type {ChildContext} from "../context"
+import { Context, ContextBuilder } from "../index.js"
+import type {ChildContext} from "../context.js"
 
 const StoreSym = Symbol("store")
 
-export type WithStore = ChildContext<Context, CtxValues>
-interface CtxValues {
-    [StoreSym]: Map<any, any>
+export type WithStore = ChildContext<Context, CtxValues<unknown, unknown>>
+interface CtxValues<K, V> {
+    [StoreSym]: Map<K, V>
     getStore: typeof getStore
 }
 
-export function withStore<C extends Context>(ctx: C) {
-    const builder = new ContextBuilder<CtxValues>()
+export function withStore<C extends Context, K=any, V=any>(ctx: C) {
+    const builder = new ContextBuilder<CtxValues<K, V>>()
     builder.with(StoreSym, new Map())
     builder.withCtxFunction("getStore", getStore)
 

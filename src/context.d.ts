@@ -1,39 +1,44 @@
-type ContextInsersect<C, Values extends object> = {
-    [Prop in Extract<keyof C, keyof Values>]:
-        Prop extends symbol
-            ? Values[Prop]
-            : ContextValue<C[Prop], Values[Prop]>
-}
+type FN = (...args: any[]) => any
+type PlainValues = FN | any[] | readonly any[]
 
-type ContextValue<Parent, Value> =
-	Value extends Function
-		? Value
-		: Value extends object
-			? Parent extends Context
-				? ChildContext<Parent, Value>
-				: ChildContext<Context, Value>
-			: Value
-	
+export type Default<Def, Val> = Omit<Def, keyof Val> & Val
 
-type Contextify<T extends object> = {
-    [Prop in keyof T]: 
-		Prop extends symbol
-			? T[Prop]
-			: ContextValue<undefined, T[Prop]>
-}
+export type DefaultDeep<Def, Val> =
+	Def extends object ? 
+	Val extends object ?
+		Val extends PlainValues ? Val : {
+			[DK in keyof Def]: DK extends keyof Val ? 
+				unknown
+				: Def[DK]
+		} & {
+			[VK in keyof Val]: VK extends keyof Def ? 
+				DefaultDeep<Def[VK], Val[VK]>
+				: Val[VK]
+		}
+	: Val
+	: Val
 
-export type Merge<V1, V2> = Omit<V1, keyof V2> & V2
+/** CtxObj takes an object and converts it to a context  */
+export type CtxObj<Obj extends object> = Default<Context, {
+    [Key in keyof Obj]: 
+		Key extends symbol ? 
+		Obj[Key] :
+		CtxVal<Obj[Key]>
+}>
 
-export type ChildContext<Parent, Values extends object> = 
-	Omit<Parent, keyof Values>
-    & Contextify<Omit<Values, keyof Parent>>
-    & ContextInsersect<Parent, Values>
+/** CtxVal converts val to context if its an object */
+type CtxVal<Val> = 
+	Val extends PlainValues ? Val : 
+	Val extends object ? CtxObj<Val>: 
+	Val
+
+export type ChildContext<Parent, Values extends object> = DefaultDeep<Parent, CtxObj<Values>>
 
 export class Context {
-    with<V extends object>(values: V): ChildContext<this, V>
-	with<K extends keyof any, V>(key: K, value: V): ChildContext<this, {[key in K]: V}>
-    withCtxFunction<K extends keyof object, A extends any[], R>
-		(name: K, fn: (ctx: this, ...args: A) => R): ChildContext<this, {[key in K]: (...args: A) => R}>
+    with<T, V extends object>(this: T, values: V): ChildContext<T, V>
+	with<T, K extends keyof any, V>(this: T, key: K, value: V): ChildContext<T, {[key in K]: V}>
+    withCtxFunction<T, K extends keyof object, A extends any[], R>
+		(this: T, name: K, fn: (ctx: this, ...args: A) => R): ChildContext<T, {[key in K]: (...args: A) => R}>
 
 	asObject(): object
 }

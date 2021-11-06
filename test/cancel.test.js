@@ -1,7 +1,7 @@
 import { Context } from "../dist/index.js"
 import {
     withCancel, 
-    cancelCtx, 
+    cancelContext, 
     whenCancelled, 
     withCancelTimeout
 } from "../dist/modules/cancel.js"
@@ -16,12 +16,12 @@ beforeEach(() => {
 describe("basic usage", () => {
     test("can be cancelled after promise", async () => {
         const whenExpected = expectRejection(ctx, "test")
-        cancelCtx(ctx, "test")
+        cancelContext(ctx, "test")
         await whenExpected
     })
 
     test("can be cancelled before promise", async () => {
-        cancelCtx(ctx, "test")
+        cancelContext(ctx, "test")
         await expectRejection(ctx, "test")
     })
 })
@@ -33,13 +33,13 @@ describe("nested usage", () => {
     });
 
     test("parent will cancel child", async () => {
-        cancelCtx(ctx, "test")
+        cancelContext(ctx, "test")
         await expectRejection(child, "test")
         await expectRejection(ctx, "test")
     })
 
     test("child will not cancel parent", async () => {
-        cancelCtx(child, "test")
+        cancelContext(child, "test")
         await expectRejection(child, "test")
         //if whenCancelled(ctx) settles, it will reject before the resolve.
         await Promise.race([whenCancelled(ctx), Promise.resolve("ok")])

@@ -5,6 +5,15 @@
 >🔐 Immutability guarantee  
 >💪 Typescript support  
 >📄 Zero dependencies
+>☑️ Unit Tested
+
+## Installation
+```
+$ npm install js-context
+```
+```js
+import {Context} from "js-context"
+```
 
 ## Context Creation
 A Context, at its bare minimum, is just an immutable (frozen) object that you can pass around your functions.
@@ -43,9 +52,13 @@ const ctx1 = rootCtx.with({
 const ctx2 = ctx1.with({
     obj: { b: 1 }
 })
-console.log(ctx1.b) // => 0
-console.log(ctx2.b) // => 1
-console.log(ctx2.a) // => stays
+console.log(ctx1.obj.b) // => 0
+console.log(ctx2.obj.b) // => 1
+console.log(ctx2.obj.a) // => stays
+
+//Object values actually get turned into context objects internally:
+console.log(ctx1.obj instanceof Context) // => true
+console.log(ctx2.obj instanceof Context) // => true
 ```
 
 ## Symbol keys
@@ -82,8 +95,8 @@ ctx.log("Hello World") // => Hello World
 Example using `this`
 ```javascript
 //accessing ctx via this
-ctx.with("log", function(arg) {
-    if(ctx.logLevel > 3) {
+ctx.with("log", function(...args) {
+    if(this.logLevel > 3) {
         console.log(...args)
     }
 })
@@ -103,21 +116,75 @@ ctx = ctx.with({obj: {a: 0}})
 ctx.obj.a = 1 // => Error: obj is frozen
 ```
 ### Prototype chain
+⚠️ Details for nerds ⚠️  
 JS-Context uses prototype inheritance to allow for the "shadowing" behavior without making copies of the data every time you use `with`. However, this comes at the cost of runtime lookup performance. When you access a property, the javascript engine has to walk all the way up the prototype chain until it finds the property its looking for. See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain for more information on prototype chains.  
 If you have a lot of properties to add, and you want to avoid this performance cost, use the `ContextBuilder`. It avoids the prototype inheritance by putting all the properties on the same object.
 
 # Modules
 Modules are libraries that expose functionality on a context via the .with() methods. Some of these expose functions as properties on the context, other functions must be called, passing a context.
 
-Official Modules:
+## Cancel
+The cancel module allows you to add cancellation to a context. This allows you to conditionally exit early lower in your stack.
+```js
+import {Context} from "js-context"
+import {withCancel, cancelContext} from "js-context/cancel"
+
+let ctx = withCancel(new Context())
+
+(async () => {
+    try {
+        const taskResult = Promise.race([
+            someLongRunningTask(ctx, ...otherParams), 
+            ctx.whenCancelled() //rejects an Error with message specified from cancelContext
+        ])
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+//...somewhere later down the line
+cancelContext(ctx, "some detailied description about why it was cancelled")
+```
+
+If you just need a simple timeout cancellation, you can do so via `withTimeout`. It behaves the exact same way as a cancellation context, except it has a setTimeout for the `cancelContext` call. If you ever need to cancel this timeout for whatever reason (maybe trying to empty the event loop), you can call `cancelTimeout`.
+```js
+import {Context} from "js-context"
+import {withTimeout, cancelContext} from "js-context/cancel"
+
+let ctx = withTimeout(new Context(), 10_000) //10 seconds
+
+(async () => {
+    try {
+        await ctx.whenCancelled() //rejects an Error with a timeout message after 10 seconds
+    } catch (err) {
+        console.error(err)
+    }
+})
+```
+
+### Store
+Store a Map on the context that will is shared between all child contexts. You can use this as a cache for data between different parts of your program.
+```js
+import {Context} from "js-context"
+import {withStore} from "js-context/store"
+
+const ctx = withStore(new Context())
+const store = ctx.getStore() //this is a Map that is shared between all child contexts.
+
+
+```
+
+## Other Modules:
 name | description
 ---|---
-cancel | Adds timeout/cancel to context
-store | Share data between child contexts
 [winston](https://npmjs.com/package/js-context-winston) | Contextual winston logging
 [aws-lambda](https://npmjs.com/package/js-context-aws-lambda) | AWS lambda timeout and AWS context information
 [knex](https://npmjs.com/package/js-context-knex) | Adds knex to context
 [mssql](https://npmjs.com/package/js-context-mssql) | Adds mssql to context
 
-Community Modules:
-## Please contribute and submit a pull request to be listed here! 😄
+
+## Submit a pull request to have your module listed here! 😄
+Module Requirements:
+- Must have tests
+- Must have typescript types
+- Methods that add to context follow convention `withXYZ(ctx)`

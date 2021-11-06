@@ -1,6 +1,6 @@
 {
   "name": "js-context",
-  "version": "0.8.3",
+  "version": "0.8.7",
   "type": "module",
   "keywords": [
     "context",
@@ -15,21 +15,30 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "tsc",
-    "prepublish": "yarn run build && yarn run test",
-    "pretest": "yarn run build",
-    "test": "node --no-warnings --experimental-vm-modules node_modules/.bin/jest"
+    "build": "tsc && yarn run copyfiles -u1 src/*.d.ts dist/types",
+    "prepublishOnly": "yarn run build && yarn run test && yarn run test-types",
+    "test": "node --no-warnings --experimental-vm-modules node_modules/.bin/jest",
+    "test-types": "tsd"
   },
+  "files": [
+    "./src/",
+    "./dist/"
+  ],
   "jest": {
     "transform": {}
   },
+  "tsd": {
+		"directory": "test"
+	},
   "exports": {
     ".": "./dist/index.js",
     "./*": "./dist/modules/*.js"
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
+    "copyfiles": "^2.4.1",
     "jest": "^27.0.6",
+    "tsd": "^0.18.0",
     "typescript": "^4.4.4"
   }
 }

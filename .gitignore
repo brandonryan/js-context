@@ -1,5 +1,4 @@
-node_modules/
-coverage/
-types/
-dist/
+/node_modules/
+/coverage/
+/dist/
 *.log
