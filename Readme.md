@@ -4,7 +4,7 @@
 >⤵️ Pass scoped data and functionality down your stack  
 >🔐 Immutability guarantee  
 >💪 Typescript support  
->📄 Zero dependencies
+>📄 Zero dependencies  
 >☑️ Unit Tested
 
 ## Installation
