@@ -1,6 +1,6 @@
 {
   "name": "js-context",
-  "version": "0.8.7",
+  "version": "0.9.0",
   "type": "module",
   "keywords": [
     "context",
@@ -28,8 +28,8 @@
     "transform": {}
   },
   "tsd": {
-		"directory": "test"
-	},
+    "directory": "test"
+  },
   "exports": {
     ".": "./dist/index.js",
     "./*": "./dist/modules/*.js"
