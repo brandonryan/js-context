@@ -146,12 +146,12 @@ let ctx = withCancel(new Context())
 cancelContext(ctx, "some detailied description about why it was cancelled")
 ```
 
-If you just need a simple timeout cancellation, you can do so via `withTimeout`. It behaves the exact same way as a cancellation context, except it has a setTimeout for the `cancelContext` call. If you ever need to cancel this timeout for whatever reason (maybe trying to empty the event loop), you can call `cancelTimeout`.
+If you just need a simple timeout cancellation, you can do so via `withCancelTimeout`. It behaves the exact same way as a cancellation context, except it has a setTimeout for the `cancelContext` call. If you ever need to cancel this timeout for whatever reason (maybe trying to empty the event loop), you can call `cancelTimeout`.
 ```js
 import {Context} from "js-context"
-import {withTimeout, cancelContext} from "js-context/cancel"
+import {withCancelTimeout, cancelContext} from "js-context/cancel"
 
-let ctx = withTimeout(new Context(), 10_000) //10 seconds
+let ctx = withCancelTimeout(new Context(), 10_000) //10 seconds
 
 (async () => {
     try {
