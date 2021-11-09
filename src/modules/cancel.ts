@@ -1,5 +1,5 @@
 import { Context, ContextBuilder } from "../index.js"
-import type {ChildContext} from "../context.js"
+import type { ChildContext } from "../context.js"
 
 const cancelSym = Symbol("cancel-state")
 
@@ -13,7 +13,7 @@ type CancelState = {
     timeoutId: number
 }
 
-export type WithCancel = ChildContext<Context, CtxValues>
+export type ContextCancel<C extends Context> = ChildContext<C, CtxValues>
 type CtxValues = {
     [cancelSym]: CancelState
     whenCancelled: typeof whenCancelled
@@ -25,9 +25,9 @@ type CtxValues = {
  * use ctx.whenCancelled or whenCancelled to listen for ctx cancellation  
  * TODO: notes about context cancellation with parents/children
  */
-export function withCancel<C extends Context>(ctx: C): WithCancel {
+export function withCancel<C extends Context>(ctx: C) {
     const ctxState: CancelState = {
-        reason: undefined,
+        reason: undefined, 
         callbacks: [],
         timeoutId: 0,
     }
@@ -43,7 +43,7 @@ export function withCancel<C extends Context>(ctx: C): WithCancel {
         .build(ctx)
 }
 
-export function cancelContext(ctx: WithCancel, reason: string) {
+export function cancelContext(ctx: ContextCancel<Context>, reason: string) {
     const state = getCancelState(ctx)
     
     if(typeof reason !== 'string') throw new Error("Must provide a reason for cancellation.")
@@ -55,7 +55,7 @@ export function cancelContext(ctx: WithCancel, reason: string) {
     }
 }
 
-export async function whenCancelled(ctx: WithCancel): Promise<void> {
+export async function whenCancelled(ctx: ContextCancel<Context>): Promise<void> {
     const state = getCancelState(ctx)
 
     //if its already cancelled, we throw early because we wont get a callback
@@ -85,12 +85,12 @@ export function withCancelTimeout<C extends Context>(ctx: C, ms: number) {
     return child
 }
 
-export function cancelTimeout(ctx: WithCancel) {
+export function cancelTimeout(ctx: ContextCancel<Context>) {
     const state = getCancelState(ctx)
     clearTimeout(state.timeoutId)
 }
 
-function hasCancellation(ctx: Context): ctx is WithCancel {
+function hasCancellation<C extends Context>(ctx: Context): ctx is ContextCancel<C> {
     return (ctx as any)[cancelSym] !== undefined
 }
 
@@ -114,7 +114,7 @@ function fmtReason(reason: string) {
     return `Context has been cancelled. Reason: ${reason}`
 }
 
-function getCancelState(ctx: WithCancel) {
+function getCancelState(ctx: ContextCancel<Context>) {
     const state = ctx[cancelSym]
     if(state === undefined) {
         throw new Error("Context does not have cancellation set.")
