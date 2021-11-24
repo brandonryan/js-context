@@ -1,5 +1,5 @@
-import {expectAssignable, expectError, expectType} from "tsd"
-import {Context} from "../src/index"
+import { expectAssignable, expectError, expectType } from "tsd"
+import { Context } from "../src/index"
 
 const ctx = new Context()
 

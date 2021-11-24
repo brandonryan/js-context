@@ -15,9 +15,9 @@
   "license": "MIT",
   "private": false,
   "scripts": {
+    "prepare": "yarn run build && yarn run test && yarn run test-types",
     "build": "tsc && yarn run copyfiles -u1 src/*.d.ts dist/types",
-    "prepublishOnly": "yarn run build && yarn run test && yarn run test-types",
-    "test": "node --no-warnings --experimental-vm-modules node_modules/.bin/jest",
+    "test": "node --no-warnings --experimental-vm-modules node_modules/.bin/jest --coverage",
     "test-types": "tsd"
   },
   "files": [
@@ -25,7 +25,10 @@
     "./dist/"
   ],
   "jest": {
-    "transform": {}
+    "transform": {},
+    "coverageThreshold": {
+      
+    }
   },
   "tsd": {
     "directory": "test"

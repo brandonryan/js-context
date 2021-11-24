@@ -5,11 +5,11 @@
 >🔐 Immutability guarantee  
 >💪 Typescript support  
 >📄 Zero dependencies  
->☑️ Unit Tested
+>☑️ Unit Tested  
 
 ## Installation
-```
-$ npm install js-context
+```shell
+npm install js-context
 ```
 ```js
 import {Context} from "js-context"
@@ -47,10 +47,10 @@ When setting values that are objects, values will be deeply merged instead of be
 ```javascript
 const rootCtx = new Context()
 const ctx1 = rootCtx.with({
-    obj: { a: "stays", b: 0 }
+	obj: { a: "stays", b: 0 }
 })
 const ctx2 = ctx1.with({
-    obj: { b: 1 }
+	obj: { b: 1 }
 })
 console.log(ctx1.obj.b) // => 0
 console.log(ctx2.obj.b) // => 1
@@ -86,9 +86,9 @@ You can attach functions to a context using `withCtxFunction`. Use this to add u
 let ctx = new Context()
 ctx = ctx.with("logLevel", 4)
 ctx = ctx.withCtxFunction("log", (ctx, ...args) => {
-    if(ctx.logLevel > 3) {
-        console.log(...args)
-    }
+	if(ctx.logLevel > 3) {
+		console.log(...args)
+	}
 })
 ctx.log("Hello World") // => Hello World
 ```
@@ -96,17 +96,17 @@ Example using `this`
 ```javascript
 //accessing ctx via this
 ctx.with("log", function(...args) {
-    if(this.logLevel > 3) {
-        console.log(...args)
-    }
+	if(this.logLevel > 3) {
+		console.log(...args)
+	}
 })
 ctx.log("Hello World") // => Hello World
 ```
 
 ## Performance
 ### Context Deep Freezing
-To guarantee immutability, JS-Context freezes all objects on the context by default.  
-It is recommended to disable this feature when in production by using `setShouldFreeze(false)`. Freezing has been known to cause performance issues in certain javascript engines.
+To guarantee immutability, JS-Context freezes all objects on the context by default. It is recommended to disable this feature when in production by using `setShouldFreeze(false)`. Freezing has been known to cause performance issues in certain javascript engines.
+
 ```javascript
 let ctx = new Context()
 ctx.foo = "bar" // => Error: ctx is frozen
@@ -117,10 +117,11 @@ ctx.obj.a = 1 // => Error: obj is frozen
 ```
 ### Prototype chain
 ⚠️ Details for nerds ⚠️  
-JS-Context uses prototype inheritance to allow for the "shadowing" behavior without making copies of the data every time you use `with`. However, this comes at the cost of runtime lookup performance. When you access a property, the javascript engine has to walk all the way up the prototype chain until it finds the property its looking for. See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain for more information on prototype chains.  
+JS-Context uses prototype inheritance to allow for the "shadowing" behavior without making copies of the data every time you use `with`. However, this comes at the cost of runtime lookup performance. When you access a property, the javascript engine has to walk all the way up the prototype chain until it finds the property its looking for. See [MDN: Inheritance and The Prototype Chain](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain) for more information on prototype chains.
 If you have a lot of properties to add, and you want to avoid this performance cost, use the `ContextBuilder`. It avoids the prototype inheritance by putting all the properties on the same object.
 
 # Modules
+
 Modules are libraries that expose functionality on a context via the .with() methods. Some of these expose functions as properties on the context, other functions must be called, passing a context.
 
 ## Cancel
@@ -132,14 +133,14 @@ import {withCancel, cancelContext} from "js-context/cancel"
 let ctx = withCancel(new Context())
 
 (async () => {
-    try {
-        const taskResult = Promise.race([
-            someLongRunningTask(ctx, ...otherParams), 
-            ctx.whenCancelled() //rejects an Error with message specified from cancelContext
-        ])
-    } catch (err) {
-        console.error(err)
-    }
+	try {
+		const taskResult = Promise.race([
+			someLongRunningTask(ctx, ...otherParams), 
+			ctx.whenCancelled() //rejects an Error with message specified from cancelContext
+		])
+	} catch (err) {
+		console.error(err)
+	}
 })
 
 //...somewhere later down the line
@@ -154,11 +155,11 @@ import {withCancelTimeout, cancelContext} from "js-context/cancel"
 let ctx = withCancelTimeout(new Context(), 10_000) //10 seconds
 
 (async () => {
-    try {
-        await ctx.whenCancelled() //rejects an Error with a timeout message after 10 seconds
-    } catch (err) {
-        console.error(err)
-    }
+	try {
+		await ctx.whenCancelled() //rejects an Error with a timeout message after 10 seconds
+	} catch (err) {
+		console.error(err)
+	}
 })
 ```
 

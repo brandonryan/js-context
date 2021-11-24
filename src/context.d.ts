@@ -32,7 +32,7 @@ type CtxVal<Val> =
 	Val extends object ? CtxObj<Val>: 
 	Val
 
-export type ChildContext<Parent, Values extends object> = DefaultDeep<Parent, CtxObj<Values>>
+export type ChildContext<Parent, Values extends object> = CtxVal<DefaultDeep<Parent, Values>>
 
 export class Context {
     with<T, V extends object>(this: T, values: V): ChildContext<T, V>

@@ -12,5 +12,6 @@
         "declarationDir": "dist/types",
         "declaration": true,
         "noEmitOnError": true,
+        "noErrorTruncation": true
     }
 }
